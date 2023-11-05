@@ -1,15 +1,13 @@
 from typing import Iterable, Any
-
+from tcod import libtcodpy
 from tcod.context import Context
 from tcod.console import Console
-from tcod import CENTER
 from entity import Entity
 from input_handlers import EventHandler
 from game_map import GameMap
 import time
 from random import randint
 from numpy import swapaxes
-import copy
 
 class Engine:
     def __init__(self, event_handler: EventHandler, game_map: GameMap, active: Entity, interval: int, mult: int,
@@ -52,7 +50,7 @@ class Engine:
                 self.check_rows()
                 if self.interval > 0.6: self.interval = self.interval*(1-self.multiplier/100)
                 elif self.interval > 0.4: self.interval = self.interval*(1-self.multiplier/150)
-                else: self.interval = self.interval*(1-(self.multiplier)/200)
+                else: self.interval = self.interval*(1-(self.multiplier)/250)
                 self.new_active_ent()
 
     def new_active_ent(self):
@@ -70,8 +68,8 @@ class Engine:
         self.rows_del = 0
         for row in range(len(rows_org)-1, -1, -1):
             self.constant_row_check(rows_org, row)
-        self.rows_del = round((self.rows_del/2)+0.5)
-        increment = 2*self.rows_del*self.rows_del
+        # For one row: 4 pts, then 12, then 24, then 40
+        increment = 2*self.rows_del*(self.rows_del+1)
         for x in range(increment):
             self.stats.increment_score()
         self.game_map.full_redo()
@@ -104,11 +102,9 @@ class Engine:
         for column in range(self.game_map.dims[0]):
             for row_num in range(self.game_map.dims[1], -1, -1):
                 for entity in self.game_map.entities:
-                    if not entity.shifted and [column, row_num] in entity.tiles:
-                        entity.shifted = True
+                    if [column, row_num] in entity.tiles:
                         entity.update_parameters(self.game_map.full)
                         entity.move_as_far_as_possible()
-                for entity in self.game_map.entities: entity.shifted = False
         return(swapaxes(self.game_map.full, 0, 1))
 
     def print_scores(self, offset, s_height, s_width):
@@ -117,7 +113,7 @@ class Engine:
         self.console.print(self.num, offset-1, top_strings[1], (200, 200, 250), (0, 0, 255))
         self.console.print(self.num+1, offset-1, top_strings[2], (0, 0, 100), (0, 0, 255))
         self.console.print(0, s_height-1, '^^^^^^^^^^^^^^^^', (0, 0, 100), (0, 0, 255))
-        self.console.print(s_width//2, 0, f'Tetris', (255, 255, 255), (0, 0, 0), alignment = CENTER)
+        self.console.print(s_width//2, 0, f'Tetris', (255, 255, 255), (0, 0, 0), alignment = libtcodpy.CENTER)
         self.console.print(0, 1, f'Score:{self.stats.score}', (255, 255, 255), (0, 0, 0))
         self.console.print(0,2,
             f'Top:{self.stats.high_score[0]},{self.stats.high_score[1]},{self.stats.high_score[2]}',

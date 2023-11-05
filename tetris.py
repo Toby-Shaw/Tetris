@@ -1,4 +1,4 @@
-import tcod 
+import tcod
 from input_handlers import EventHandler
 from engine import Engine
 from entity import Entity
@@ -12,7 +12,7 @@ def main():
     g_width = 15
     g_height = 15
 
-    tileset = tcod.tileset.load_tilesheet("Games/Tetris/randomimage.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
+    tileset = tcod.tileset.load_tilesheet("randomimage.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
     entities = []
     tile_type = choice([1, 2, 3, 4, 7])
     if tile_type==1: num = randint(0, 11)
@@ -23,10 +23,10 @@ def main():
     stats = Gamestats()
 
     context = tcod.context.new(
-        x=100,
-        y=100,
-        width = 750,
-        height = 1000,
+        x=400,
+        y=40,
+        width = 700,
+        height = 840,
         columns = g_width,
         rows = g_height,
         tileset=tileset,
@@ -36,7 +36,7 @@ def main():
     event_handler = EventHandler(game_map, context, stats)
     engine = Engine(event_handler = event_handler, game_map = game_map, active = entities[0],
         interval = 0.8, mult = 3, stats=stats)
-    root_console = tcod.Console(s_width, s_height, order='F')
+    root_console = tcod.console.Console(s_width, s_height, order='F')
     while True:
         engine.render(console=root_console, context=context)
         events = tcod.event.get()

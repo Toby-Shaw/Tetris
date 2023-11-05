@@ -1,4 +1,5 @@
 from __future__ import annotations
+import time
 
 from typing import TYPE_CHECKING, Tuple
 
@@ -6,7 +7,6 @@ if TYPE_CHECKING:
     from engine import Engine
     from entity import Entity
     from game_map import GameMap
-from tcod import event as ev
 from copy import deepcopy
 
 class Action:
@@ -37,8 +37,8 @@ class MovementAction(Action):
         if not self.far:
             entity.move(self.dx, self.dy)
         else: 
-            entity.prev_set = deepcopy(entity.tiles)
-            entity.move_as_far_as_possible()
+            entity.prev_set_move = deepcopy(entity.tiles)
+            entity.move_as_far_as_possible(dx = self.dx, dy = self.dy)
 
 class MouseAction(Action):
     def __init__(self, event, context, gamemap: GameMap):

@@ -15,7 +15,6 @@ class Entity:
         self.moveable = True
         self.dimen = 0
         self.life_span = 0
-        self.shifted = False
         #None, ----, |__, |^^^, [], _|-, -|_, _|_ 
         total_types = ([], [[0, 0], [1, 0], [2, 0], [3, 0]], [[0, 0], [0, 1], [1, 1], [2, 1]],
             [[0, 1], [0, 0], [1, 0], [2, 0]], [[0, 0], [0, 1], [1, 0], [1, 1]],
@@ -23,7 +22,8 @@ class Entity:
             [[1, 0], [0, 1], [1, 1], [2, 1]])
         self.core_lists = [0, 0, 1, 1, 0, 1, 2, 2]
         self.tiles = total_types[tile_type]
-        self.prev_set = []
+        self.prev_set_move = []
+        self.prev_set_rot = []
         self.tried_rotate = False
         if tile_type:
             self.core = self.tiles[self.core_lists[tile_type]]
@@ -34,7 +34,7 @@ class Entity:
 
     def move(self, dx: int, dy: int) -> bool:
         """Move the entity a given amount, returning whether the entity should still be moveable or not"""
-        self.prev_set = copy.deepcopy(self.tiles)
+        self.prev_set_move = copy.deepcopy(self.tiles)
         if self.moveable and self.check_bounds(self.tiles, dx, dy):
             self.life_span += 1
             for coord in self.tiles:
@@ -58,7 +58,7 @@ class Entity:
                 new_coords[coord_change][0]+=(self.rel_maps[self.orientation][coord_change][0])
                 new_coords[coord_change][1]+=(self.rel_maps[self.orientation][coord_change][1])
             if self.check_bounds(new_coords, 0, 0):
-                self.prev_set = copy.deepcopy(self.tiles)
+                self.prev_set_rot = copy.deepcopy(self.tiles)
                 self.tiles = new_coords
                 self.core = self.tiles[self.core_lists[self.tile_type]]
             else: self.rotate(dir=dir, round=round)
@@ -101,10 +101,11 @@ class Entity:
         """Self-explanatory, update the parameter list used for collisions for this entity"""
         self.parameters = parameter
 
-    def move_as_far_as_possible(self):
+    def move_as_far_as_possible(self, dx = 0, dy = 1):
         """Move until the entity hits something, recursively"""
-        if self.check_bounds(self.tiles, 0, 1):
+        if self.check_bounds(self.tiles, dx, dy):
             for coord in self.tiles:
                 self.life_span += 1
-                coord[1] += 1
-            self.move_as_far_as_possible()
+                coord[0] += dx
+                coord[1] += dy
+            self.move_as_far_as_possible(dx = dx, dy = dy)

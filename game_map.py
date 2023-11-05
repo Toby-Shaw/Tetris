@@ -18,14 +18,17 @@ class GameMap:
 
     def render(self, console: Console) -> None:
         """If a tile is visible, draw with "light" colors, otherwise draw with SHROUD"""
-        console.tiles_rgb[0:self.width, (self.ofs):(self.height+self.ofs)] = np.select(
+        console.rgb[0:self.width, (self.ofs):(self.height+self.ofs)] = np.select(
             condlist = [self.full],
             choicelist = [self.tiles['light']],
             default = tile_types.SHROUD
         )
         for entity in self.entities:
             if entity.moveable:
-                for prev_tile in entity.prev_set:
+                for prev_tile in entity.prev_set_move:
+                    self.full[prev_tile[0], prev_tile[1]] = False
+                    self.tiles[prev_tile[0], prev_tile[1]] = tile_types.empty
+                for prev_tile in entity.prev_set_rot:
                     self.full[prev_tile[0], prev_tile[1]] = False
                     self.tiles[prev_tile[0], prev_tile[1]] = tile_types.empty
                 for tile in entity.tiles:
