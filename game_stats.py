@@ -1,3 +1,4 @@
+from file_attempts import *
 class Gamestats:
     """Track stats for Alien Invasion."""
 
@@ -9,7 +10,7 @@ class Gamestats:
 
     def get_high_score(self):
         """Read the high score from the file in a correct manner"""
-        f = open("high_score.txt", "r")
+        f = access_txt("high_score.txt", "r")
         high_score = str(f.read())
         self.high_score = high_score.split()
         for x in range(len(self.high_score)):
@@ -17,7 +18,7 @@ class Gamestats:
 
     def write_high_score(self):
         """Convert the high score list back into file format, to be saved between games"""
-        high_score = open("high_score.txt", "w")
+        high_score = access_txt("high_score.txt", "w")
         write_out = ""
         for x in range(len(self.high_score)):
             write_out += (str(self.high_score[x]) + ' ')

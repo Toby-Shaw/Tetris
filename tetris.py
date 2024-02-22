@@ -1,18 +1,20 @@
 import tcod
+import sys
 from input_handlers import EventHandler
 from engine import Engine
 from entity import Entity
 from game_map import GameMap
 from random import randint, choice
 from game_stats import Gamestats
+from file_attempts import *
 
 def main():
     s_width = 15
     s_height = 20
     g_width = 15
     g_height = 15
-
-    tileset = tcod.tileset.load_tilesheet("randomimage.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
+    filename = "randomimage.png"
+    tileset = access_file_tile_sheet(filename)
     entities = []
     tile_type = choice([1, 2, 3, 4, 7])
     if tile_type==1: num = randint(0, 11)

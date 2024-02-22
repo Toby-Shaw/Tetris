@@ -93,7 +93,7 @@ class Entity:
                 coord[1]+dy >= 0 and coord[1]+dy < self.bounds[1]) and (
                     not self.parameters[coord[0]+dx, coord[1]+dy]
                 ): count += 1
-        if count == 4:
+        if count == len(coords):
             return True
         return False
 
